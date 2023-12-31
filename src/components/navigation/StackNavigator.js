@@ -8,7 +8,7 @@ import HelpCenter from '../../screens/other/HelpCenter';
 import Favourite from '../../screens/other/Favourite';
 import OtherSetting from '../../screens/other/OtherSetting';
 import SearchLocate from '../../screens/other/SearchLocate';
-
+import color from '../../constants/color';
 const Stack = createStackNavigator();
 
 export default function StackNavigator() {
@@ -23,7 +23,7 @@ export default function StackNavigator() {
         {
           headerTitle: "Chỉnh sửa thông tin",
           headerTitleStyle: {
-            color: '#45cfdd',
+            color: color.PRIMARY_COLOR,
             textTransform: 'uppercase',
             fontWeight: '600',
           },
@@ -33,7 +33,7 @@ export default function StackNavigator() {
         {
           headerTitle: "Trung tâm hỗ trợ",
           headerTitleStyle: {
-            color: '#45cfdd',
+            color: color.PRIMARY_COLOR,
             textTransform: 'uppercase',
             fontWeight: '600',
           },
@@ -43,7 +43,7 @@ export default function StackNavigator() {
         {
           headerTitle: "Quản lí nhân viên yêu thích",
           headerTitleStyle: {
-            color: '#45cfdd',
+            color: color.PRIMARY_COLOR,
             textTransform: 'uppercase',
             fontWeight: '600',
           },
@@ -53,7 +53,7 @@ export default function StackNavigator() {
         {
           headerTitle: "Cài đặt khác",
           headerTitleStyle: {
-            color: '#45cfdd',
+            color: color.PRIMARY_COLOR,
             textTransform: 'uppercase',
             fontWeight: '600',
           },

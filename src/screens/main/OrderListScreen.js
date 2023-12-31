@@ -1,11 +1,11 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import PendingScreen from '../OrderStat/Pending';
 import DeliveringScreen from '../OrderStat/Delivering';
 import DeliveredScreen from '../OrderStat/Delivered';
 import CanceledScreen from '../OrderStat/Canceled';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import color from '../../constants/color';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,13 +15,13 @@ export default function OrderListScreen() {
   const onChangeSearch = query => setSearchQuery(query);
   return (
     <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarActiveTintColor: "#45cfdd",
-      tabBarInactiveTintColor: "gray",
+      tabBarActiveTintColor: color.PRIMARY_COLOR,
+      tabBarInactiveTintColor: color.SECONDARY_COLOR,
       tabBarLabelStyle: {
         fontSize: 12,
       },
       headerTitleStyle: {
-        color: '#45cfdd',
+        color: color.PRIMARY_COLOR,
         textTransform: 'uppercase',
         fontWeight: 'bold',
       },

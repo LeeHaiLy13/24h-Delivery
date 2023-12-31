@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Button, Dimensions, FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { createStackNavigator } from '@react-navigation/stack';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, } from '@react-navigation/native';
 import SeperatorLine from '../../components/SeperatorLine';
 import { FontAwesome5 } from '@expo/vector-icons';
 
