@@ -1,134 +1,199 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  ScrollView,
-  FlatList,
-  Text,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { Input, Button } from "react-native-elements";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import Checkbox from 'expo-checkbox';
+import color from '../../constants/color';
+import { FIREBASE_AUTH } from "../../../FirebaseConfig";
 
-const RegisterScreen = ({ navigation }) => {
+
+export default function RegisterScreen({ navigation }) {
+  const [isChecked, setChecked] = useState(false);
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phonenum, setPhonenum] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const register = async () => {
+  const registerUser = async () => {
+    setLoading(true);
     try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const user = userCredential.user;
-      const userId = user.uid;
-
-      // Lưu dữ liệu vào Realtime Database
-      const database = getDatabase();
-      const userRef = ref(database, "users/" + userId);
-      const userDataForRealtimeDB = {
-        name: name,
-        phone: phonenum,
-        email: email,
-        password: password,
-      };
-      set(userRef, userDataForRealtimeDB);
-
-      // Lưu dữ liệu vào Cloud Firestore
-      const firestore = getFirestore();
-      const userDocRef = doc(firestore, "users", userId);
-      const userDataForFirestore = {
-        name: name,
-        phone: phonenum,
-        email: email,
-        password: password,
-      };
-      await setDoc(userDocRef, userDataForFirestore);
-
-      navigation.replace("LoginScreen");
+      const userCredentials = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      const userUID = userCredentials.user.uid;
+      const docRef = doc(getFirestore(), 'users', userUID);
+      await setDoc(docRef, {
+        // avatarUrl: avatar ? avatar : 'https://thumbs.dreamstime.com/b/businessman-avatar-line-icon-vector-illustration-design-79327237.jpg',
+        username,
+        password,
+        userUID,
+        email
+      });
+      // Alert.alert(null, 'Đăng kí thành công', [
+      //   { text: 'Đăng nhập ngay', onPress: () => navigation.replace("LoginScreen") },
+      // ]);
     } catch (error) {
-      console.error("Lỗi trong quá trình đăng ký:", error);
-      alert(
-        "Đăng ký thất bại. Vui lòng kiểm tra thông tin của bạn và thử lại."
-      );
+      Alert.alert(null, 'Email hoặc mật khẩu không hợp lệ')
+    } finally {
+      setLoading(false);
     }
   };
-  const data = [];
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, []);
+
+  // const registerUser = async () => {
+  //   try {
+  //     const auth = getAuth();
+  //     const userCredential = await createUserWithEmailAndPassword(
+  //       auth,
+  //       email,
+  //       password
+  //     );
+
+  //     const user = userCredential.user;
+  //     const userId = user.uid;
+
+  //     // Lưu dữ liệu vào Realtime Database
+  //     const database = getDatabase();
+  //     const userRef = ref(database, "users/" + userId);
+  //     const userDataForRealtimeDB = {
+  //       name: username,
+  //       email: email,
+  //       password: password,
+  //     };
+  //     set(userRef, userDataForRealtimeDB);
+
+  //     // Lưu dữ liệu vào Cloud Firestore
+  //     const firestore = getFirestore();
+  //     const userDocRef = doc(firestore, "users", userId);
+  //     const userDataForFirestore = {
+  //       name: username,
+  //       email: email,
+  //       password: password,
+  //     };
+  //     await setDoc(userDocRef, userDataForFirestore);
+  //     Alert.alert(null, 'Đăng kí thành công', [
+  //       {text: 'Đăng nhập ngay', onPress: () => navigation.replace("LoginScreen")},
+  //     ]);
+  //   } catch (error) {
+  //     Alert.alert(null, 'Email hoặc mật khẩu không hợp lệ')
+  //   }
+  // };
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.img}>
-        <Image
-          source={require("../../../assets/images/logo.png")}
-          style={{ width: 180, height: 180 }}
+    <View style={styles.container}>
+      {/* <View style={styles.img}>
+        <Image source={require('../../../assets/images/logo.png')} style={{ width: 150, height: 150 }} />
+      </View> */}
+      <View style={styles.title}>
+        <Text style={{ fontWeight: 'bold', fontSize: 28, }}>
+          Tạo tài khoản
+        </Text>
+      </View>
+      <View style={styles.inputContainer}>
+        <Input
+          placeholder="Tên người dùng"
+          leftIcon={{ name: "people", type: "material" }}
+          value={username}
+          onChangeText={(text) => setUsername(text)}
+          inputContainerStyle={styles.inputField}
+        />
+        <Input
+          placeholder="Email"
+          leftIcon={{ name: "email", type: "material" }}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          inputContainerStyle={styles.inputField}
+        />
+        <Input
+          placeholder="Mật khẩu"
+          leftIcon={{ name: "lock", type: "material" }}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          secureTextEntry
+          inputContainerStyle={styles.inputField}
         />
       </View>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => <Text>{item.value}</Text>}
-        keyExtractor={(item) => item.key}
-      />
-      <Input
-        placeholder="Tên đăng ký"
-        leftIcon={{ name: "people", type: "material" }}
-        value={name}
-        onChangeText={(text) => setName(text)}
-        inputContainerStyle={styles.inputContainer}
-      />
-      <Input
-        placeholder=" Số điện thoại"
-        leftIcon={{ name: "phone", type: "material" }}
-        value={phonenum}
-        onChangeText={(text) => setPhonenum(text)}
-        inputContainerStyle={styles.inputContainer}
-      />
-      <Input
-        placeholder="Email"
-        leftIcon={{ name: "email", type: "material" }}
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        inputContainerStyle={styles.inputContainer}
-      />
-      <Input
-        placeholder="Mật khẩu"
-        leftIcon={{ name: "lock", type: "material" }}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry
-        inputContainerStyle={styles.inputContainer}
-      />
-      <Button title="Register" buttonStyle={styles.button} onPress={register} />
-    </ScrollView>
+      {/* <View style={styles.textinputGroup}>
+        <View style={styles.textinput}>
+          <TextInput placeholder="Email (tùy chọn)" style={{ fontSize: 18 }}></TextInput>
+        </View>
+        <View style={styles.textinput}>
+          <TextInput placeholder="Mật khẩu" style={{ fontSize: 18 }}></TextInput>
+        </View>
+        <View style={styles.textinput}>
+          <TextInput placeholder="Nhập lại mật khẩu" style={{ fontSize: 18 }}></TextInput>
+        </View>
+      </View> */}
+      {/* <View style={styles.section}>
+        <Checkbox
+          style={styles.checkbox}
+          value={isChecked}
+          onValueChange={setChecked}
+          color={isChecked ? color.PRIMARY_COLOR : undefined}
+        />
+        <Text style={styles.paragraph}>Đồng ý với điền khoản sử dụng dịch vụ và chính sách bảo mật của chúng tôi</Text>
+      </View> */}
+      {/* <Button title="Đăng kí" buttonStyle={styles.button} onPress={() => navigation.navigate('LoginScreen')} /> */}
+      {loading
+        ? <ActivityIndicator size={'large'} color={color.SECONDARY_COLOR} />
+        : <Button title="Đăng kí" buttonStyle={styles.button} onPress={registerUser} />
+      }
+      <TouchableOpacity style={{ marginVertical: marginSmall / 2, }} onPress={() => navigation.navigate('LoginScreen')}>
+        <Text style={{ color: color.PRIMARY_COLOR, letterSpacing: 0, }}>Đã có tài khoản? Đăng nhập</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
-export default RegisterScreen;
+const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceHeight = Math.round(Dimensions.get('window').height);
+const marginSmall = Math.round((deviceWidth * 0.05) / 2);
+const paddingSmall = marginSmall;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    alignItems: "center",
-    marginTop: 10,
+    flex: 1,
+    height: deviceHeight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  button: {
-    width: 150,
-    marginTop: 10,
-    borderRadius: 30,
-    backgroundColor: "#FF4500",
+  title: {
+    marginVertical: marginSmall,
   },
   inputContainer: {
-    borderBottomWidth: 0, // Remove the underline
-    borderRadius: 30,
-    backgroundColor: "white", // Background color of the input container
-    paddingHorizontal: 15,
+    marginTop: 12,
+    marginBottom: 0,
   },
-  img: {
-    marginBottom: 20,
+  inputField: {
+    width: deviceWidth * 0.8,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginVertical: -6,
+  },
+  button: {
+    width: deviceWidth * 0.8,
+    borderRadius: 30,
+    backgroundColor: color.PRIMARY_COLOR,
+    padding: paddingSmall,
+  },
+  section: {
+    // backgroundColor: '#ddd',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: deviceWidth * 0.8,
+    marginLeft: -16,
+
+  },
+  paragraph: {
+    // backgroundColor: '#ccc',
+    width: 310,
+    marginVertical: marginSmall / 2,
+    fontSize: 15,
+  },
+  checkbox: {
+    margin: 8,
   },
 });

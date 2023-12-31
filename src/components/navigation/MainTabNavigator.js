@@ -5,6 +5,7 @@ import GiftScreen from '../../screens/main/GiftScreen';
 import AccountScreen from '../../screens/main/AccountScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import color from '../../constants/color';
 
 
 const Tab = createBottomTabNavigator();
@@ -28,8 +29,8 @@ export default function MainTabNavigator() {
         }
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      tabBarActiveTintColor: "#45cfdd",
-      tabBarInactiveTintColor: "gray",
+      tabBarActiveTintColor: color.PRIMARY_COLOR,
+      tabBarInactiveTintColor: color.SECONDARY_COLOR,
       tabBarLabelStyle: {
         fontSize: 12,
         paddingBottom: 4,
@@ -39,7 +40,7 @@ export default function MainTabNavigator() {
       },
       headerTitleAlign: 'center',
       headerTitleStyle: {
-        color: '#45cfdd',
+        color: color.PRIMARY_COLOR,
         textTransform: 'uppercase',
         fontWeight: '600',
       },

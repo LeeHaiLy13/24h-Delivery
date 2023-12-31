@@ -4,7 +4,7 @@ import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpa
 import SeperatorLine from '../../components/SeperatorLine';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
+import color from '../../constants/color';
 
 const vehicleData = [
   {
@@ -68,12 +68,12 @@ export default function HomeScreen() {
             <View>
               <View style={styles.box}>
                 <TouchableOpacity style={styles.changeLocation} onPress={() => navigation.navigate('SearchLocate')}>
-                  <Ionicons name="locate" size={18} color="#45cfdd" />
+                  <Ionicons name="locate" size={18} color={color.PRIMARY_COLOR} />
                   <Text style={{ fontSize: 18, fontWeight: '500' }}>Địa điểm lấy hàng</Text>
                 </TouchableOpacity>
                 <SeperatorLine />
                 <TouchableOpacity style={styles.changeLocation} onPress={() => navigation.navigate('SearchLocate')}>
-                  <Ionicons name="location" size={18} color="#45cfdd" />
+                  <Ionicons name="location" size={18} color={color.PRIMARY_COLOR} />
                   <Text style={{ fontSize: 18, fontWeight: '500' }}>Địa điểm giao hàng</Text>
                 </TouchableOpacity>
                 <SeperatorLine />
