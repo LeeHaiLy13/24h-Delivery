@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
 import * as Location from 'expo-location';
 
 export default function SearchLocate() {
@@ -68,6 +67,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '80%',
+    height: '90%',
   },
 });

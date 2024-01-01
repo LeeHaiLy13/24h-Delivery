@@ -67,7 +67,7 @@ export default function HomeScreen() {
           return (
             <View>
               <View style={styles.box}>
-                <TouchableOpacity style={styles.changeLocation} onPress={() => navigation.navigate('SearchLocate')}>
+                <TouchableOpacity style={styles.changeLocation} onPress={() => navigation.navigate('AddressPicker')}>
                   <Ionicons name="locate" size={18} color={color.PRIMARY_COLOR} />
                   <Text style={{ fontSize: 18, fontWeight: '500' }}>Địa điểm lấy hàng</Text>
                 </TouchableOpacity>
