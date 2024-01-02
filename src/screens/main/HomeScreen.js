@@ -1,34 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Input, Button } from "react-native-elements";
 
- import SeperatorLine from '../../components/SeperatorLine';
-import { Ionicons, Octicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import color from '../../constants/color';
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
-import { addDoc, collection, serverTimestamp, doc, setDoc, onSnapshot, query, orderBy, } from 'firebase/firestore';
-import VehicleList from '../../components/VehicleList';
+import SeperatorLine from "../../components/SeperatorLine";
+import { Ionicons, Octicons } from "@expo/vector-icons";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import color from "../../constants/color";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../../FirebaseConfig";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  doc,
+  setDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import VehicleList from "../../components/VehicleList";
 
 export default function HomeScreen({ route }) {
   // const uid = route.params.uid;
-  const [pickuplocate, setPickuplocate] = useState("");
   const [deliverylocate, setDeliverylocate] = useState("");
-  const [vehicle, setVehicle] = useState("")
-  const [deliveryLocation, setDeliveryLocation] = useState(null);
+  const [vehicle, setVehicle] = useState("");
+  const [pickupLocation, setPickupLocation] = useState(null);
 
   const navigation = useNavigation();
   const currentUser = FIREBASE_AUTH?.currentUser?.uid;
-  const docRef = doc(FIREBASE_DB, 'users', currentUser);
-  const colRef = collection(docRef, 'orderList');
+  const docRef = doc(FIREBASE_DB, "users", currentUser);
+  const colRef = collection(docRef, "orderList");
 
   const addData = async () => {
     try {
-      if (pickuplocate && pickuplocate.length > 0 && deliverylocate && deliverylocate.length) {
+      if (
+        pickupLocation &&
+        pickupLocation.length > 0 &&
+        deliverylocate &&
+        deliverylocate.length
+      ) {
         const data = {
           orderId: new Date().getTime().toString(),
-          pickupAddress: pickuplocate,
+          pickupAddress: pickupLocation,
           deliveryAddress: deliverylocate,
           createAt: serverTimestamp(),
           vehicle: vehicle,
@@ -49,26 +71,38 @@ export default function HomeScreen({ route }) {
     }
   };
   const handleConfirmLocation = (selectedLocation) => {
-    setDeliveryLocation(selectedLocation);
+    setPickupLocation(selectedLocation);
+  };
+  const handleVehicleSelect = (vehicleName) => {
+    console.log('Selected vehicle:', vehicleName);
+    setVehicle(vehicleName);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-      <TouchableOpacity
-                  style={styles.changeLocation}
-                  onPress={() =>
-                    navigation.navigate('SearchLocate', { onConfirmLocation: handleConfirmLocation })
-                  }
-                >
-                  <Ionicons name='location' size={18} color={color.PRIMARY_COLOR} />
-                  <Text style={{ fontSize: 16, fontWeight: '500' }}>Địa điểm lấy hàng: {deliveryLocation}</Text>
-                </TouchableOpacity>
-                <SeperatorLine />
-        <View style={{ marginTop: -6, marginBottom: -12, }}>
+        <TouchableOpacity
+          style={styles.changeLocation}
+          onPress={() =>
+            navigation.navigate("SearchLocate", {
+              onConfirmLocation: handleConfirmLocation,
+            })
+          }
+        >
+          <Ionicons name="location" size={18} color={color.PRIMARY_COLOR} />
+          <Text style={{ fontSize: 16, fontWeight: "500" }}>
+            Địa điểm lấy hàng: {pickupLocation}
+          </Text>
+        </TouchableOpacity>
+        <SeperatorLine />
+        <View style={{ marginTop: -6, marginBottom: -12 }}>
           <Input
             placeholder="Nhập địa điểm giao hàng"
-            leftIcon={{ name: "location", type: "ionicon", color: color.PRIMARY_COLOR }}
+            leftIcon={{
+              name: "location",
+              type: "ionicon",
+              color: color.PRIMARY_COLOR,
+            }}
             value={deliverylocate}
             autoCapitalize="none"
             onChangeText={(text) => setDeliverylocate(text)}
@@ -77,7 +111,9 @@ export default function HomeScreen({ route }) {
         </View>
       </View>
       <View style={styles.availableVehicle}>
-        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>Phương tiện có sẵn</Text>
+        <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "bold" }}>
+          Phương tiện có sẵn
+        </Text>
       </View>
       <StatusBar style="auto" />
       <VehicleList />
@@ -86,17 +122,15 @@ export default function HomeScreen({ route }) {
   );
 }
 
-
-const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceWidth = Math.round(Dimensions.get("window").width);
 const marginSmall = Math.round((deviceWidth * 0.05) / 2);
 const paddingSmall = marginSmall;
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor: '#fff',
-    alignItems: 'center',
+    alignItems: "center",
     // justifyContent: 'center',
   },
   inputContainer: {
@@ -105,7 +139,7 @@ const styles = StyleSheet.create({
     marginHorizontal: marginSmall,
     marginVertical: 16,
     paddingHorizontal: paddingSmall,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 16,
     shadowColor: "#000",
     shadowOffset: {
@@ -126,29 +160,26 @@ const styles = StyleSheet.create({
   changeLocation: {
     // layout
     paddingVertical: paddingSmall,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
     gap: paddingSmall,
   },
   availableVehicle: {
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingBottom: 6,
   },
-  vehicleList: {
-
-  },
+  vehicleList: {},
   vehicleItem: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: paddingSmall,
     margin: 6,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 4,
     width: deviceWidth * 0.9,
-    flexDirection: 'row',
-    alignItems: 'center',
-
+    flexDirection: "row",
+    alignItems: "center",
   },
   vehicleImg: {
     width: 60,
@@ -158,6 +189,6 @@ const styles = StyleSheet.create({
   },
   vehicleName: {
     fontSize: 20,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

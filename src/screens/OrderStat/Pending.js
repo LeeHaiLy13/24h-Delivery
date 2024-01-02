@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
-import { doc, collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-
+import { doc, collection, onSnapshot, query, where, updateDoc } from 'firebase/firestore';
+import { Button, Input, Overlay } from 'react-native-elements';
 
 export default function PendingScreen() {
   const [pendingOrders, setPendingOrders] = useState([]);
@@ -59,6 +59,19 @@ export default function PendingScreen() {
 
   
 
+  const cancelOrder = async (orderId) => {
+    try {
+      // Update the order status to "Canceled"
+      const orderDocRef = doc(colRef, orderId);
+      await updateDoc(orderDocRef, { status: 'Canceled' });
+
+      // Optional: Fetch the updated pending list again
+      getPendingList();
+    } catch (error) {
+      console.error('Error canceling order:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {pendingOrders.length > 0 ? (
@@ -68,10 +81,16 @@ export default function PendingScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigateToOrderDetail(item)}>
             <View style={styles.orderItem}>
-              <Text>ID: {item.id}</Text>
-              <Text>Ngày tạo: {item.formattedDate}</Text>
-              <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
+              <View style={{paddingBottom: 12,}}>
+                <Text>ID: {item.id}</Text>
+                <Text>Ngày tạo: {item.formattedDate}</Text>
+                <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
+
+              </View>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
+              <View style={{alignItems: 'center',}}>
+                <Button title='Hủy đơn hàng' buttonStyle={styles.button} onPress={() => cancelOrder(item.id)} />
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -110,5 +129,11 @@ const styles = StyleSheet.create({
     width: deviceWidth * 0.9,
     backgroundColor: "#fff",
     color: "#ddd",
+  },
+  button: {
+    backgroundColor: '#FF0000',
+    borderRadius: 8,
+    padding: 12,
+    width: 200,
   },
 });
