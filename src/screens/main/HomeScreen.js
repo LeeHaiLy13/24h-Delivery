@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import { Alert, Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { Button, Input, Overlay } from 'react-native-elements';
 import SeperatorLine from "../../components/SeperatorLine";
 import { Ionicons, Octicons } from '@expo/vector-icons';
@@ -53,10 +53,10 @@ export default function HomeScreen() {
         setDeliveryLocation("");
         setVehicle(""); // Reset selected vehicle
       } else {
-        alert("Vui lòng nhập thông tin đơn hàng");
+        Alert.alert(null, "Vui lòng nhập thông tin đơn hàng");
       }
     } catch (error) {
-      alert("Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
+      Alert.alert(null, "Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
     }
   };
   const handleConfirmLocation = (selectedLocation) => {
