@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
     padding: paddingSmall,
   },
   title: {
-    margin: 15
+    margin: 15,
   },
 });

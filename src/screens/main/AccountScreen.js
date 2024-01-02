@@ -7,6 +7,8 @@ import SeperatorLine from '../../components/SeperatorLine';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getAuth, signOut } from 'firebase/auth';
 import { Button } from "react-native-elements";
+import color from '../../constants/color';
+
 const accountSettingOptions = [
   {
     key: '1',
@@ -19,21 +21,18 @@ const accountSettingOptions = [
     option: "Trung tâm hỗ trợ",
     icon: <FontAwesome5 name="headphones-alt" size={24} color="black" />,
     nameScreen: "HelpCenter",
-
   },
-  {
-    key: '3',
-    option: "Quản lí nhân viên yêu thích",
-    icon: <FontAwesome5 name="user-alt" size={24} color="black" />,
-    nameScreen: "Favourite",
-
-  },
+  // {
+  //   key: '3',
+  //   option: "Quản lí nhân viên yêu thích",
+  //   icon: <FontAwesome5 name="user-alt" size={24} color="black" />,
+  //   nameScreen: "Favourite",
+  // },
   {
     key: '4',
     option: "Cài đặt khác",
     icon: <FontAwesome5 name="cog" size={24} color="black" />,
     nameScreen: "OtherSetting",
-
   },
 ]
 
@@ -88,7 +87,7 @@ export default function AccountScreen() {
       </LinearGradient>
       <RenderOptionList />
       <StatusBar style="auto" />
-      <Button title='Logn Out' buttonStyle={styles.button} onPress={logout} />
+      <Button title='Đăng xuất' buttonStyle={styles.button} onPress={logout} />
     </View>
   );
 };
@@ -104,5 +103,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     // justifyContent: 'center',
+  },
+  button: {
+    marginBottom: 12, 
+    backgroundColor: color.PRIMARY_COLOR,
+    borderRadius: 8,
+    padding: 12,
   },
 }); 
