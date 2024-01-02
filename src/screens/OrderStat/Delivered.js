@@ -61,7 +61,10 @@ export default function DeliveredScreen() {
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
               <Text>Ngày tạo: {item.formattedDate}</Text>
-              <Text style={{color: "#32CD32"}}>Trạng thái: Đã giao</Text>
+              <Text>Phương tiện: {item.vehicle}</Text>
+              <Text>Địa điểm lấy hàng: {item.pickupAddress}</Text>
+              <Text>Địa điểm lấy hàng: {item.deliveryAddress}</Text>
+              <Text style={{ color: "#32CD32" }}>Trạng thái: Đã giao</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}

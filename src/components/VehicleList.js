@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const vehicleData = [
   {
@@ -25,17 +25,31 @@ export default function VehicleList({ onVehicleSelect }) {
   };
 
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      data={vehicleData}
-      keyExtractor={(item) => item.key}
-      renderItem={({ item }) => (
-        <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress(item.name)}>
-          <Image source={{ uri: item.imageURL }} style={styles.vehicleImg} />
-          <Text style={styles.vehicleName}>{item.name}</Text>
-        </TouchableOpacity>
-      )}
-    />
+    // <FlatList
+    //   contentContainerStyle={styles.container}
+    //   data={vehicleData}
+    //   keyExtractor={(item) => item.key}
+    //   renderItem={({ item }) => (
+    //     <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress(item.name)}>
+    //       <Image source={{ uri: item.imageURL }} style={styles.vehicleImg} />
+    //       <Text style={styles.vehicleName}>{item.name}</Text>
+    //     </TouchableOpacity>
+    //   )}
+    // />
+    <View>
+      <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe máy")}>
+        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Text style={styles.vehicleName}>Xe máy</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe van")}>
+        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Text style={styles.vehicleName}>Xe van</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe tải")}>
+        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Text style={styles.vehicleName}>Xe tải</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -46,6 +60,7 @@ const paddingSmall = marginSmall;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    height: 300,
   },
   vehicleItem: {
     backgroundColor: '#fff',
