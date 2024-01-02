@@ -46,9 +46,9 @@ export default function CanceledScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
-              <Text>ID đơn hàng: {item.id}</Text>
-              <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text>
-              <Text>Trạng thái: {item.status}</Text>
+              <Text>ID: {item.id}</Text>
+              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
+              <Text style={{color: "#FF0000"}}>Trạng thái: Đã hủy</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}

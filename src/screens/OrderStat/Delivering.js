@@ -43,9 +43,9 @@ export default function DeliveringScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
-              <Text>ID đơn hàng: {item.id}</Text>
-              <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text>
-              <Text>Trạng thái: {item.status}</Text>
+              <Text>ID: {item.id}</Text>
+              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
+              <Text style={{color: "#FFB800"}}>Trạng thái: Đang giao</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}

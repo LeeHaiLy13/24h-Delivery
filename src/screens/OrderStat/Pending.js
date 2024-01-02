@@ -47,8 +47,8 @@ export default function PendingScreen() {
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
-              <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text>
-              <Text>Trạng thái: {item.status}</Text>
+              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
+              <Text style={{color: "#B0B0B0"}}>Trạng thái: Đang chờ</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}
@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 8,
     width: deviceWidth * 0.9,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    color: "#ddd",
   },
 });
