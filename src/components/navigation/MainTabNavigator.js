@@ -70,12 +70,12 @@ export default function MainTabNavigator() {
           headerTitle: "Đơn hàng",
         }
       }/>
-      <Tab.Screen name="GiftScreen" component={GiftScreen} options={
+      {/* <Tab.Screen name="GiftScreen" component={GiftScreen} options={
         {
           tabBarLabel: "Ưu đãi",
           headerTitle: "Ưu đãi",
         }
-      }/>
+      }/> */}
       <Tab.Screen name="AccountScreen" component={AccountScreen} options={
         {
           tabBarLabel: "Tài khoản",

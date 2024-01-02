@@ -20,13 +20,13 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
     try {
       const userCredentials = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-      const userUID = userCredentials.user.uid;
-      const docRef = doc(getFirestore(), 'users', userUID);
+      const userID = userCredentials.user.uid;
+      const docRef = doc(getFirestore(), 'users', userID);
       await setDoc(docRef, {
         // avatarUrl: avatar ? avatar : 'https://thumbs.dreamstime.com/b/businessman-avatar-line-icon-vector-illustration-design-79327237.jpg',
         username,
         password,
-        userUID,
+        userID,
         email
       });
       // Alert.alert(null, 'Đăng kí thành công', [
@@ -83,9 +83,9 @@ export default function RegisterScreen({ navigation }) {
   // };
   return (
     <View style={styles.container}>
-      {/* <View style={styles.img}>
+      <View style={styles.img}>
         <Image source={require('../../../assets/images/logo.png')} style={{ width: 150, height: 150 }} />
-      </View> */}
+      </View>
       <View style={styles.title}>
         <Text style={{ fontWeight: 'bold', fontSize: 28, }}>
           Tạo tài khoản

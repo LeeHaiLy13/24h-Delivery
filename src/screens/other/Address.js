@@ -4,7 +4,7 @@ import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 const AddressPicker = () => {
   const [address, setaddress] = useState('');
   const [note, setnote] = useState('');
-  
+
   const handle = () => {
     // Thực hiện xử lý đăng nhập tại đây
     console.log('Địa chỉ:', address);
@@ -20,7 +20,7 @@ const AddressPicker = () => {
         placeholder="Nhập địa chỉ "
         onChangeText={text => setaddress(text)}
       />
-       <View style={styles.line}></View>
+      <View style={styles.line}></View>
       <TextInput
         style={styles.input}
         placeholder="Ghi chú"
@@ -28,7 +28,7 @@ const AddressPicker = () => {
         onChangeText={text => setnote(text)}
       />
       <View style={styles.line}></View>
-      
+
       <Button style={styles.submit}
         title="Xác nhận"
         onPress={handle}
@@ -41,17 +41,17 @@ const styles = StyleSheet.create({
   container: {
 
     justifyContent: 'center',
-   
+
   },
-  header:{
-    height:40,
+  header: {
+    height: 40,
     backgroundColor: '#ddd',
     marginVertical: 5,
   },
-  label:{
+  label: {
     marginTop: 10,
   },
-  
+
   input: {
     height: 40,
     borderColor: '#ddd',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  submit:{
+  submit: {
     width: 50,
     height: 40,
     backgroundColor: 'blue',
