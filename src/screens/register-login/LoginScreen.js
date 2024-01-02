@@ -83,7 +83,7 @@ export default function LoginScreen({ navigation }) {
         <Text style={{ color: color.PRIMARY_COLOR }}>Quên mật khẩu</Text>
       </View> */}
       <TouchableOpacity style={{ marginVertical: marginSmall / 2, }} onPress={() => navigation.navigate('RegisterScreen')}>
-        <Text style={{ color: color.PRIMARY_COLOR, letterSpacing: 0, }}>Chưa có tài khoản? Đăng kí ngay!</Text>
+        <Text style={{ color: color.PRIMARY_COLOR, letterSpacing: 0, }}>Chưa có tài khoản? Đăng kí ngay</Text>
       </TouchableOpacity>
     </View>
   );
