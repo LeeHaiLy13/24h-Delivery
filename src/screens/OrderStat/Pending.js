@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 import { doc, collection, onSnapshot, query, where, updateDoc } from 'firebase/firestore';
 import { Button, Input, Overlay } from 'react-native-elements';
 
@@ -52,6 +53,11 @@ export default function PendingScreen() {
       unsubscribe();
     };
   }, []);
+  const navigateToOrderDetail = (order) => {
+    navigation.navigate('OrderDetailScreen', { order });
+  };
+
+  
 
   const cancelOrder = async (orderId) => {
     try {
@@ -70,9 +76,10 @@ export default function PendingScreen() {
     <View style={styles.container}>
       {pendingOrders.length > 0 ? (
         <FlatList
-          data={pendingOrders}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+        data={pendingOrders}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigateToOrderDetail(item)}>
             <View style={styles.orderItem}>
               <View style={{paddingBottom: 12,}}>
                 <Text>ID: {item.id}</Text>
@@ -85,8 +92,10 @@ export default function PendingScreen() {
                 <Button title='Hủy đơn hàng' buttonStyle={styles.button} onPress={() => cancelOrder(item.id)} />
               </View>
             </View>
-          )}
-        />
+          </TouchableOpacity>
+        )}
+      />
+      
       ) : (
         <Text>Không có đơn hàng nào.</Text>
       )}

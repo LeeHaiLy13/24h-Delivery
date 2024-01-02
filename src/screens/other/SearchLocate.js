@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
 
-export default function SearchLocate() {
+export default function SearchLocate({ route }) {
+  const navigation = useNavigation();
+  const { onConfirmLocation } = route.params || {};
   const [location, setLocation] = useState(null);
+  const [placeName, setPlaceName] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
   const [region, setRegion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +17,7 @@ export default function SearchLocate() {
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      // setLoading(true)
+
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
@@ -21,44 +25,85 @@ export default function SearchLocate() {
 
       let currentLocation = await Location.getCurrentPositionAsync({});
       setLocation(currentLocation);
+
+      const locationDetails = await Location.reverseGeocodeAsync({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+
+      if (locationDetails.length > 0) {
+        const { name, city, region, country } = locationDetails[0];
+        setPlaceName(`${name || ''}, ${city || ''}, ${region || ''}, ${country || ''}`);
+      }
+
       setRegion({
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
-      })
-      setLoading(false)
+      });
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching location:', error);
       setErrorMsg('Error fetching location');
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    getLocation()
+    getLocation();
   }, []);
-  console.log(location);
+
+  const handlePlaceSelect = (data, details) => {
+    // Handle the selected place, you can log or perform additional actions here
+    console.log(data, details);
+  };
+
+  const handleConfirmLocation = () => {
+    // Handle the confirmation of the current location
+    // You can perform additional actions here
+    console.log('Current location confirmed:', location);
+
+    // Pass the selected location back to the calling screen
+    if (onConfirmLocation) {
+      onConfirmLocation(placeName);
+    }
+
+    // Navigate back to the previous screen
+    navigation.goBack();
+  };
 
   return (
-    loading ?
-      <ActivityIndicator style={{ flex: 1 }} /> :
-      <View style={styles.container}>
-        <GooglePlacesAutocomplete
-          placeholder='Search'
-          onPress={(data, details = null) => {
-            // 'details' is provided when fetchDetails = true
-            console.log(data, details);
-          }}
-          query={{
-            key: 'MAP_API_KEY',
-            language: 'en',
-          }}
-        />
-        <MapView style={styles.map} region={region}>
-          <Marker coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }} />
-        </MapView>
-      </View>
-
-  )
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator style={styles.loadingIndicator} />
+      ) : (
+        <>
+          
+          <MapView style={styles.map} region={region}>
+            {location && (
+              <>
+                <Marker
+                  coordinate={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
+                  title={placeName || 'Vị trí hiện tại:'}
+                  description='Vị trí của bạn'
+                />
+                <Text style={styles.locationText}>
+                  Your Current Location: {placeName || 'Loading...'}
+                </Text>
+              </>
+            )}
+          </MapView>
+          <TouchableOpacity onPress={handleConfirmLocation} style={styles.confirmButton}>
+            <Text style={styles.confirmButtonText}>Confirm Location</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -68,5 +113,38 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '90%',
+  },
+  loadingIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  locationText: {
+    bottom: 10,
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  autocompleteContainer: {
+    top: 10,
+    width: '90%',
+    marginLeft: '5%',
+  },
+  autocompleteTextInput: {
+    fontSize: 16,
+  },
+  confirmButton: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
