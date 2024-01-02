@@ -96,6 +96,7 @@ export default function RegisterScreen({ navigation }) {
           placeholder="Tên người dùng"
           leftIcon={{ name: "people", type: "material" }}
           value={username}
+          autoCapitalize="none"
           onChangeText={(text) => setUsername(text)}
           inputContainerStyle={styles.inputField}
         />
@@ -103,6 +104,7 @@ export default function RegisterScreen({ navigation }) {
           placeholder="Email"
           leftIcon={{ name: "email", type: "material" }}
           value={email}
+          autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
           inputContainerStyle={styles.inputField}
         />
@@ -110,6 +112,7 @@ export default function RegisterScreen({ navigation }) {
           placeholder="Mật khẩu"
           leftIcon={{ name: "lock", type: "material" }}
           value={password}
+          autoCapitalize="none"
           onChangeText={(text) => setPassword(text)}
           secureTextEntry
           inputContainerStyle={styles.inputField}

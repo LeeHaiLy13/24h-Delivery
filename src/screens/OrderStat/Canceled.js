@@ -10,6 +10,16 @@ export default function CanceledScreen() {
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
   const colRef = collection(docRef, 'orderList');
 
+  // Hàm chuyển đổi thời gian
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   const getCanceledList = () => {
     // Create a query to get orders with status "Canceled"
     const q = query(colRef, where('status', '==', 'Canceled'));
@@ -19,8 +29,11 @@ export default function CanceledScreen() {
       let canceledOrders = [];
       querySnapshot.forEach((order) => {
         const orderData = { ...order.data(), id: order.id };
-        canceledOrders.push(orderData);
-        console.log('createdAt:', orderData.createdAt);
+        if (orderData.createAt) {
+          orderData.formattedDate = formatTimestamp(orderData.createAt);
+          canceledOrders.push(orderData);
+        }
+        // console.log('createdAt:', orderData.createdAt);
       });
       setCanceledOrders(canceledOrders);
     });
@@ -47,14 +60,14 @@ export default function CanceledScreen() {
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
-              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
+              <Text>Ngày tạo: {item.formattedDate}</Text>
               <Text style={{color: "#FF0000"}}>Trạng thái: Đã hủy</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}
         />
       ) : (
-        <Text>Không có đơn hàng "Canceled" nào.</Text>
+        <Text>Không có đơn hàng nào.</Text>
       )}
       <StatusBar style="auto" />
     </View>

@@ -50,6 +50,7 @@ export default function LoginScreen({ navigation }) {
           placeholder="Email"
           leftIcon={{ name: "email", type: "material" }}
           value={email}
+          autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
           inputContainerStyle={styles.inputField}
         />
@@ -64,13 +65,14 @@ export default function LoginScreen({ navigation }) {
           placeholder="Mật Khẩu"
           leftIcon={{ name: "lock", type: "material" }}
           value={password}
+          autoCapitalize="none"
           onChangeText={(text) => setPassword(text)}
           secureTextEntry
           inputContainerStyle={styles.inputField}
         />
       </View>
       <Button title="Đăng nhập" buttonStyle={styles.button} onPress={signIn} />
-      <Button title="Vô tạm" buttonStyle={styles.button} onPress={() => navigation.navigate('MainTabNavigator')} />
+      {/* <Button title="Vô tạm" buttonStyle={styles.button} onPress={() => navigation.navigate('MainTabNavigator')} /> */}
       {/* <Text style={{ fontSize: 16, marginVertical: marginSmall, }}>
         Hoặc
       </Text>
