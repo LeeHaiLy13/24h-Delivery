@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { doc, collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function PendingScreen() {
   const [pendingOrders, setPendingOrders] = useState([]);
@@ -51,22 +53,30 @@ export default function PendingScreen() {
       unsubscribe();
     };
   }, []);
+  const navigateToOrderDetail = (order) => {
+    navigation.navigate('OrderDetailScreen', { order });
+  };
+
+  
 
   return (
     <View style={styles.container}>
       {pendingOrders.length > 0 ? (
         <FlatList
-          data={pendingOrders}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+        data={pendingOrders}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigateToOrderDetail(item)}>
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
               <Text>Ngày tạo: {item.formattedDate}</Text>
               <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
-          )}
-        />
+          </TouchableOpacity>
+        )}
+      />
+      
       ) : (
         <Text>Không có đơn hàng nào.</Text>
       )}

@@ -8,6 +8,7 @@ import HelpCenter from '../../screens/other/HelpCenter';
 import Favourite from '../../screens/other/Favourite';
 import OtherSetting from '../../screens/other/OtherSetting';
 import SearchLocate from '../../screens/other/SearchLocate';
+import OrderDetails from '../../screens/other/OrderDetails';
 import AddressPicker from '../../screens/other/Address';
 import color from '../../constants/color';
 const Stack = createStackNavigator();
@@ -21,6 +22,7 @@ export default function StackNavigator() {
         <Stack.Screen name="MainTabNavigator" component={MainTabNavigator} options={{ headerShown: false, }}/>
         <Stack.Screen name="SearchLocate" component={SearchLocate}/>
         <Stack.Screen name="AddressPicker" component={AddressPicker}/>
+        <Stack.Screen name="OrderDetails" component={OrderDetails}/>
         <Stack.Screen name='EditProfile' component={EditProfile} options={
         {
           headerTitle: "Chỉnh sửa thông tin",

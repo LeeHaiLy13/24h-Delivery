@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { Input, Button } from "react-native-elements";
 
-// import SeperatorLine from '../../components/SeperatorLine';
+ import SeperatorLine from '../../components/SeperatorLine';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import color from '../../constants/color';
@@ -16,6 +16,7 @@ export default function HomeScreen({ route }) {
   const [pickuplocate, setPickuplocate] = useState("");
   const [deliverylocate, setDeliverylocate] = useState("");
   const [vehicle, setVehicle] = useState("")
+  const [deliveryLocation, setDeliveryLocation] = useState(null);
 
   const navigation = useNavigation();
   const currentUser = FIREBASE_AUTH?.currentUser?.uid;
@@ -47,21 +48,23 @@ export default function HomeScreen({ route }) {
       alert("Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
     }
   };
-
+  const handleConfirmLocation = (selectedLocation) => {
+    setDeliveryLocation(selectedLocation);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <View style={{ marginTop: 12, marginBottom: -6, }}>
-          <Input
-            placeholder="Nhập địa điểm lấy hàng"
-            leftIcon={{ name: "locate", type: "ionicon", color: color.PRIMARY_COLOR }}
-            value={pickuplocate}
-            autoCapitalize="none"
-            onChangeText={(text) => setPickuplocate(text)}
-            inputContainerStyle={styles.inputField}
-          />
-        </View>
+      <TouchableOpacity
+                  style={styles.changeLocation}
+                  onPress={() =>
+                    navigation.navigate('SearchLocate', { onConfirmLocation: handleConfirmLocation })
+                  }
+                >
+                  <Ionicons name='location' size={18} color={color.PRIMARY_COLOR} />
+                  <Text style={{ fontSize: 16, fontWeight: '500' }}>Địa điểm lấy hàng: {deliveryLocation}</Text>
+                </TouchableOpacity>
+                <SeperatorLine />
         <View style={{ marginTop: -6, marginBottom: -12, }}>
           <Input
             placeholder="Nhập địa điểm giao hàng"
