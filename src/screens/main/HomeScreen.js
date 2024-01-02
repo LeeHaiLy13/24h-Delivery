@@ -2,21 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { Input, Button } from "react-native-elements";
-
-// import SeperatorLine from '../../components/SeperatorLine';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import color from '../../constants/color';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { addDoc, collection, serverTimestamp, doc, setDoc, onSnapshot, query, orderBy, } from 'firebase/firestore';
 import VehicleList from '../../components/VehicleList';
-
-
+import LocationModal from '../../components/LocationModal';
+// import SeperatorLine from '../../components/SeperatorLine';
 
 export default function HomeScreen({ route }) {
   // const uid = route.params.uid;
   const [pickuplocate, setPickuplocate] = useState("");
   const [deliverylocate, setDeliverylocate] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const currentUser = FIREBASE_AUTH?.currentUser?.uid;
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
@@ -33,9 +32,9 @@ export default function HomeScreen({ route }) {
           status: "Delivered",
           orderIndex: new Date().getTime(), // Thêm trường orderIndex
         };
-  
+
         await addDoc(colRef, data);
-  
+
         setPickuplocate("");
         setDeliverylocate("");
         Keyboard.dismiss();
@@ -46,12 +45,11 @@ export default function HomeScreen({ route }) {
       alert("Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
     }
   };
-  
-  
 
 
   return (
     <View style={styles.container}>
+      {modalVisible && <LocationModal close={() => setModalVisible(false)} setLocation={setDeliverylocate} />}
       <View style={styles.inputContainer}>
         <View style={{ marginTop: 12, marginBottom: -6, }}>
           <Input
@@ -67,7 +65,8 @@ export default function HomeScreen({ route }) {
             placeholder="Nhập địa điểm giao hàng"
             leftIcon={{ name: "location", type: "ionicon", color: color.PRIMARY_COLOR }}
             value={deliverylocate}
-            onChangeText={(text) => setDeliverylocate(text)}
+            onFocus={() => setModalVisible(true)}
+            //onChangeText={(text) => setDeliverylocate(text)}
             inputContainerStyle={styles.inputField}
           />
         </View>
