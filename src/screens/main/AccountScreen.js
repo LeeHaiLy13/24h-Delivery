@@ -5,7 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, } from '@react-navigation/native';
 import SeperatorLine from '../../components/SeperatorLine';
 import { FontAwesome5 } from '@expo/vector-icons';
-
+import { getAuth, signOut } from 'firebase/auth';
+import { Button } from "react-native-elements";
 const accountSettingOptions = [
   {
     key: '1',
@@ -66,6 +67,16 @@ function RenderOptionList() {
 
 
 export default function AccountScreen() {
+  const navigation = useNavigation();
+
+  const logout = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      navigation.navigate('LoginScreen');
+    }).catch((error) => {
+      console.error(error);
+    });
+  };
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -77,6 +88,7 @@ export default function AccountScreen() {
       </LinearGradient>
       <RenderOptionList />
       <StatusBar style="auto" />
+      <Button title='Logn Out' buttonStyle={styles.button} onPress={logout} />
     </View>
   );
 };

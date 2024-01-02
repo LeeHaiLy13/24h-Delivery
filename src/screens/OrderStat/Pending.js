@@ -10,6 +10,16 @@ export default function PendingScreen() {
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
   const colRef = collection(docRef, 'orderList');
 
+  // Hàm chuyển đổi thời gian
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   const getPendingList = () => {
     // Create a query to get orders with status "Pending"
     const q = query(colRef, where('status', '==', 'Pending'));
@@ -19,8 +29,12 @@ export default function PendingScreen() {
       let pendingOrders = [];
       querySnapshot.forEach((order) => {
         const orderData = { ...order.data(), id: order.id };
-        pendingOrders.push(orderData);
-        console.log('createdAt:', orderData.createdAt);
+        if (orderData.createAt) {
+          orderData.formattedDate = formatTimestamp(orderData.createAt);
+          pendingOrders.push(orderData);
+        }
+        // console.log('ID:', orderData.id);
+        // console.log('createdAt:', orderData.formattedDate);
       });
       setPendingOrders(pendingOrders);
     });
@@ -47,14 +61,14 @@ export default function PendingScreen() {
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
-              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
-              <Text style={{color: "#B0B0B0"}}>Trạng thái: Đang chờ</Text>
+              <Text>Ngày tạo: {item.formattedDate}</Text>
+              <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}
         />
       ) : (
-        <Text>Không có đơn hàng "Pending" nào.</Text>
+        <Text>Không có đơn hàng nào.</Text>
       )}
       <StatusBar style="auto" />
     </View>

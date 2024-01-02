@@ -29,10 +29,10 @@ export default function VehicleList() {
       keyExtractor={(item) => item.key}
       renderItem={({ item }) => {
         return (
-          <View style={styles.vehicleItem}>
+          <TouchableOpacity style={styles.vehicleItem}>
             <Image source={{ uri: item.imageURL }} style={styles.vehicleImg} />
             <Text style={styles.vehicleName}>{item.name}</Text>
-          </View>
+          </TouchableOpacity>
         );
       }
       }

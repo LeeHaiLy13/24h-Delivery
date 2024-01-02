@@ -10,6 +10,16 @@ export default function DeliveringScreen() {
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
   const colRef = collection(docRef, 'orderList');
 
+  // Hàm chuyển đổi thời gian
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   const getDeliveringList = () => {
     // Create a query to get orders with status "Delivering"
     const q = query(colRef, where('status', '==', 'Delivering'));
@@ -18,7 +28,11 @@ export default function DeliveringScreen() {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let deliveringOrders = [];
       querySnapshot.forEach((order) => {
-        deliveringOrders.push({ ...order.data(), id: order.id });
+        const orderData = { ...order.data(), id: order.id };
+        if (orderData.createAt) {
+          orderData.formattedDate = formatTimestamp(orderData.createAt);
+          deliveringOrders.push(orderData);
+        }
       });
       setDeliveringOrders(deliveringOrders);
     });
@@ -44,14 +58,14 @@ export default function DeliveringScreen() {
           renderItem={({ item }) => (
             <View style={styles.orderItem}>
               <Text>ID: {item.id}</Text>
-              {/* <Text>Ngày tạo: {item.createdAt?.toISOString()}</Text> */}
+              <Text>Ngày tạo: {item.formattedDate}</Text>
               <Text style={{color: "#FFB800"}}>Trạng thái: Đang giao</Text>
               {/* Hiển thị các trường dữ liệu khác nếu cần */}
             </View>
           )}
         />
       ) : (
-        <Text>Không có đơn hàng "Pending" nào.</Text>
+        <Text>Không có đơn hàng nào.</Text>
       )}
       <StatusBar style="auto" />
     </View>

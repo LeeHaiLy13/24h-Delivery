@@ -11,12 +11,12 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { addDoc, collection, serverTimestamp, doc, setDoc, onSnapshot, query, orderBy, } from 'firebase/firestore';
 import VehicleList from '../../components/VehicleList';
 
-
-
 export default function HomeScreen({ route }) {
   // const uid = route.params.uid;
   const [pickuplocate, setPickuplocate] = useState("");
   const [deliverylocate, setDeliverylocate] = useState("");
+  const [vehicle, setVehicle] = useState("")
+
   const navigation = useNavigation();
   const currentUser = FIREBASE_AUTH?.currentUser?.uid;
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
@@ -30,12 +30,13 @@ export default function HomeScreen({ route }) {
           pickupAddress: pickuplocate,
           deliveryAddress: deliverylocate,
           createAt: serverTimestamp(),
-          status: "Delivered",
+          vehicle: vehicle,
+          status: "Pending",
           orderIndex: new Date().getTime(), // Thêm trường orderIndex
         };
-  
+
         await addDoc(colRef, data);
-  
+
         setPickuplocate("");
         setDeliverylocate("");
         Keyboard.dismiss();
@@ -46,8 +47,6 @@ export default function HomeScreen({ route }) {
       alert("Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
     }
   };
-  
-  
 
 
   return (
@@ -58,6 +57,7 @@ export default function HomeScreen({ route }) {
             placeholder="Nhập địa điểm lấy hàng"
             leftIcon={{ name: "locate", type: "ionicon", color: color.PRIMARY_COLOR }}
             value={pickuplocate}
+            autoCapitalize="none"
             onChangeText={(text) => setPickuplocate(text)}
             inputContainerStyle={styles.inputField}
           />
@@ -67,6 +67,7 @@ export default function HomeScreen({ route }) {
             placeholder="Nhập địa điểm giao hàng"
             leftIcon={{ name: "location", type: "ionicon", color: color.PRIMARY_COLOR }}
             value={deliverylocate}
+            autoCapitalize="none"
             onChangeText={(text) => setDeliverylocate(text)}
             inputContainerStyle={styles.inputField}
           />
