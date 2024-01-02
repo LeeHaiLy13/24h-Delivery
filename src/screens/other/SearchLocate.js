@@ -55,21 +55,16 @@ export default function SearchLocate({ route }) {
   }, []);
 
   const handlePlaceSelect = (data, details) => {
-    // Handle the selected place, you can log or perform additional actions here
     console.log(data, details);
   };
 
   const handleConfirmLocation = () => {
-    // Handle the confirmation of the current location
-    // You can perform additional actions here
     console.log('Current location confirmed:', location);
 
-    // Pass the selected location back to the calling screen
     if (onConfirmLocation) {
       onConfirmLocation(placeName);
     }
 
-    // Navigate back to the previous screen
     navigation.goBack();
   };
 

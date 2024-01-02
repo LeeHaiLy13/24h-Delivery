@@ -53,11 +53,6 @@ export default function PendingScreen() {
       unsubscribe();
     };
   }, []);
-  const navigateToOrderDetail = (order) => {
-    navigation.navigate('OrderDetailScreen', { order });
-  };
-
-  
 
   const cancelOrder = async (orderId) => {
     try {
@@ -81,14 +76,17 @@ export default function PendingScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigateToOrderDetail(item)}>
             <View style={styles.orderItem}>
-              <View style={{paddingBottom: 12,}}>
+              <View style={{ paddingBottom: 12, }}>
                 <Text>ID: {item.id}</Text>
                 <Text>Ngày tạo: {item.formattedDate}</Text>
+                <Text>Phương tiện: {item.vehicle}</Text>
+                <Text>Địa điểm lấy hàng: {item.pickupAddress}</Text>
+                <Text>Địa điểm lấy hàng: {item.deliveryAddress}</Text>
                 <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
+                {/* Hiển thị các trường dữ liệu khác nếu cần */}
 
               </View>
-              {/* Hiển thị các trường dữ liệu khác nếu cần */}
-              <View style={{alignItems: 'center',}}>
+              <View style={{ alignItems: 'center', }}>
                 <Button title='Hủy đơn hàng' buttonStyle={styles.button} onPress={() => cancelOrder(item.id)} />
               </View>
             </View>
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
     color: "#ddd",
   },
   button: {
-    backgroundColor: '#FF0000',
+    backgroundColor: '#FF3131',
     borderRadius: 8,
     padding: 12,
     width: 200,

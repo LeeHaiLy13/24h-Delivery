@@ -1,70 +1,59 @@
-import React, { useEffect, useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Input, Button } from "react-native-elements";
-
+import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { Dimensions, FlatList, Image, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import { Button, Input, Overlay } from 'react-native-elements';
 import SeperatorLine from "../../components/SeperatorLine";
-import { Ionicons, Octicons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import color from "../../constants/color";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../../FirebaseConfig";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  doc,
-  setDoc,
-  onSnapshot,
-  query,
-  orderBy,
-} from "firebase/firestore";
-import VehicleList from "../../components/VehicleList";
+import { Ionicons, Octicons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import color from '../../constants/color';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
+import { addDoc, collection, serverTimestamp, doc, setDoc, onSnapshot, query, orderBy, } from 'firebase/firestore';
+import VehicleList from '../../components/VehicleList';
 
-export default function HomeScreen({ route }) {
-  // const uid = route.params.uid;
-  const [deliverylocate, setDeliverylocate] = useState("");
+export default function HomeScreen() {
+  const [pickupLocation, setPickupLocation] = useState("Lấy vị trí hiện tại");
+  const [deliveryLocation, setDeliveryLocation] = useState("");
   const [vehicle, setVehicle] = useState("");
-  const [pickupLocation, setPickupLocation] = useState(null);
-
   const navigation = useNavigation();
   const currentUser = FIREBASE_AUTH?.currentUser?.uid;
-  const docRef = doc(FIREBASE_DB, "users", currentUser);
-  const colRef = collection(docRef, "orderList");
+  const docRef = doc(FIREBASE_DB, 'users', currentUser);
+  const colRef = collection(docRef, 'orderList');
+
+  const [confirmationOverlayVisible, setConfirmationOverlayVisible] = useState(false);
+
+  const showAlert = () => {
+    setConfirmationOverlayVisible(true);
+  };
+
+  const closeOverlay = () => {
+    setConfirmationOverlayVisible(false);
+  };
+
+  const handleConfirm = () => {
+    addData();
+    closeOverlay();
+  };
 
   const addData = async () => {
     try {
-      if (
-        pickupLocation &&
-        pickupLocation.length > 0 &&
-        deliverylocate &&
-        deliverylocate.length
-      ) {
+      if (pickupLocation && pickupLocation.length > 0 && deliveryLocation && deliveryLocation.length) {
         const data = {
           orderId: new Date().getTime().toString(),
           pickupAddress: pickupLocation,
-          deliveryAddress: deliverylocate,
+          deliveryAddress: deliveryLocation,
           createAt: serverTimestamp(),
           vehicle: vehicle,
           status: "Pending",
-          orderIndex: new Date().getTime(), // Thêm trường orderIndex
+          orderIndex: new Date().getTime(),
         };
 
         await addDoc(colRef, data);
 
-        setPickuplocate("");
-        setDeliverylocate("");
-        Keyboard.dismiss();
+        setPickupLocation("Lấy vị trí hiện tại");
+        setDeliveryLocation("");
+        setVehicle(""); // Reset selected vehicle
       } else {
-        alert("Vui lòng nhập địa điểm lấy hàng và giao hàng.");
+        alert("Vui lòng nhập thông tin đơn hàng");
       }
     } catch (error) {
       alert("Đã có lỗi xảy ra khi thêm dữ liệu: " + error.message);
@@ -73,6 +62,7 @@ export default function HomeScreen({ route }) {
   const handleConfirmLocation = (selectedLocation) => {
     setPickupLocation(selectedLocation);
   };
+
   const handleVehicleSelect = (vehicleName) => {
     console.log('Selected vehicle:', vehicleName);
     setVehicle(vehicleName);
@@ -89,53 +79,56 @@ export default function HomeScreen({ route }) {
             })
           }
         >
-          <Ionicons name="location" size={18} color={color.PRIMARY_COLOR} />
-          <Text style={{ fontSize: 16, fontWeight: "500" }}>
-            Địa điểm lấy hàng: {pickupLocation}
-          </Text>
+          <Ionicons name="locate" size={18} color={color.PRIMARY_COLOR} />
+          <Text style={{ fontSize: 16, fontWeight: "500" }}>{pickupLocation}</Text>
         </TouchableOpacity>
         <SeperatorLine />
-        <View style={{ marginTop: -6, marginBottom: -12 }}>
+        <View style={{ marginTop: -6, marginBottom: -12, }}>
           <Input
             placeholder="Nhập địa điểm giao hàng"
-            leftIcon={{
-              name: "location",
-              type: "ionicon",
-              color: color.PRIMARY_COLOR,
-            }}
-            value={deliverylocate}
+            leftIcon={{ name: "location", type: "ionicon", color: color.PRIMARY_COLOR, size: 20, }}
+            value={deliveryLocation}
             autoCapitalize="none"
-            onChangeText={(text) => setDeliverylocate(text)}
+            onChangeText={(text) => setDeliveryLocation(text)}
             inputContainerStyle={styles.inputField}
           />
         </View>
       </View>
       <View style={styles.availableVehicle}>
-        <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "bold" }}>
-          Phương tiện có sẵn
-        </Text>
+        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>Phương tiện có sẵn</Text>
       </View>
       <StatusBar style="auto" />
-      <VehicleList />
-      <Button title="Test" buttonStyle={styles.button} onPress={addData} />
+      <VehicleList onVehicleSelect={handleVehicleSelect} />
+      <Button title="Tạo đơn hàng" buttonStyle={styles.button} onPress={showAlert} />
+
+      <Overlay
+        isVisible={confirmationOverlayVisible}
+        onBackdropPress={closeOverlay}
+        overlayStyle={styles.overlay}
+      >
+        <Text style={styles.overlayText}>Địa điểm lấy hàng: {pickupLocation}</Text>
+        <Text style={styles.overlayText}>Địa điểm giao hàng: {deliveryLocation}</Text>
+        <Text style={styles.overlayText}>Phương tiện: {vehicle}</Text>
+        <View style={styles.overlayButtons}>
+          <Button title="Hủy" buttonStyle={styles.button} onPress={closeOverlay} />
+          <Button title="Xác nhận" buttonStyle={styles.button} onPress={handleConfirm} />
+        </View>
+      </Overlay>
     </View>
   );
 }
 
-const deviceWidth = Math.round(Dimensions.get("window").width);
+const deviceWidth = Math.round(Dimensions.get('window').width);
 const marginSmall = Math.round((deviceWidth * 0.05) / 2);
 const paddingSmall = marginSmall;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
     alignItems: "center",
-    // justifyContent: 'center',
   },
   inputContainer: {
     width: deviceWidth * 0.9,
-    // height: 200,
     marginHorizontal: marginSmall,
     marginVertical: 16,
     paddingHorizontal: paddingSmall,
@@ -148,47 +141,45 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-
     elevation: 4,
+  },
+  changeLocation: {
+    paddingVertical: paddingSmall * 2,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: paddingSmall,
   },
   inputField: {
     width: deviceWidth * 0.8,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+    marginTop: 16,
   },
-  changeLocation: {
-    // layout
-    paddingVertical: paddingSmall,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    gap: paddingSmall,
-  },
+  
   availableVehicle: {
     justifyContent: "center",
     paddingBottom: 6,
   },
-  vehicleList: {},
-  vehicleItem: {
-    backgroundColor: "#fff",
-    padding: paddingSmall,
-    margin: 6,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 4,
-    width: deviceWidth * 0.9,
-    flexDirection: "row",
-    alignItems: "center",
+  button: {
+    marginBottom: 12,
+    backgroundColor: color.PRIMARY_COLOR,
+    borderRadius: 8,
+    padding: 12,
   },
-  vehicleImg: {
-    width: 60,
-    height: 60,
-    aspectRatio: 1,
-    marginRight: 20,
+  overlay: {
+    width: deviceWidth * 0.8,
+    padding: 20,
+    borderRadius: 8,
   },
-  vehicleName: {
-    fontSize: 20,
-    fontWeight: "500",
+  overlayText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  overlayButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
 });
