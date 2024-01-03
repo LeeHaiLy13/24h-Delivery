@@ -38,15 +38,15 @@ export default function VehicleList({ onVehicleSelect }) {
     // />
     <View>
       <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe máy")}>
-        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/10039/10039536.png' }} style={styles.vehicleImg} />
         <Text style={styles.vehicleName}>Xe máy</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe van")}>
-        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/67/67653.png' }} style={styles.vehicleImg} />
         <Text style={styles.vehicleName}>Xe van</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.vehicleItem} onPress={() => handleOnPress("Xe tải")}>
-        <Image source={{ uri: 'https://webstyle.unicomm.fsu.edu/3.4/img/placeholders/ratio-pref-1-1.png' }} style={styles.vehicleImg} />
+        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/71/71222.png' }} style={styles.vehicleImg} />
         <Text style={styles.vehicleName}>Xe tải</Text>
       </TouchableOpacity>
     </View>

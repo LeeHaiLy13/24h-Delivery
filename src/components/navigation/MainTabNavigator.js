@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 
 export default function MainTabNavigator() {
   return (
-    <Tab.Navigator tabBarOptions={{ keyboardHidesTabBar: true }}  initialRouteName="HomeScreen" screenOptions={({ route }) => ({
+    <Tab.Navigator tabBarOptions={{ keyboardHidesTabBar: true }} initialRouteName="HomeScreen" screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
         if (route.name === "HomeScreen") {
@@ -35,6 +35,15 @@ export default function MainTabNavigator() {
         fontSize: 12,
         paddingBottom: 4,
       },
+      tabBarHideOnKeyboard: true,
+      // tabBarStyle: [
+      //   {
+      //     "display": "flex",
+      //     "height": "60",
+
+      //   },
+      //   null,
+      // ],
       tabBarStyle: {
         height: 60,
       },
@@ -63,25 +72,25 @@ export default function MainTabNavigator() {
           //   <Ionicons name="home-outline" size={size} color={color} />
           // }
         }
-      }/>
+      } />
       <Tab.Screen name="OrderListScreen" component={OrderListScreen} options={
         {
           tabBarLabel: "Đơn hàng",
           headerTitle: "Đơn hàng",
         }
-      }/>
+      } />
       <Tab.Screen name="GiftScreen" component={GiftScreen} options={
         {
           tabBarLabel: "Ưu đãi",
           headerTitle: "Ưu đãi",
         }
-      }/>
+      } />
       <Tab.Screen name="AccountScreen" component={AccountScreen} options={
         {
           tabBarLabel: "Tài khoản",
           headerTitle: "Tài khoản",
         }
-      }/>
+      } />
     </Tab.Navigator>
 
   );

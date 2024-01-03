@@ -77,10 +77,9 @@ export default function HomeScreen() {
             navigation.navigate("SearchLocate", {
               onConfirmLocation: handleConfirmLocation,
             })
-          }
-        >
-          <Ionicons name="locate" size={18} color={color.PRIMARY_COLOR} />
-          <Text style={{ fontSize: 16, fontWeight: "500" }}>{pickupLocation}</Text>
+          }>
+          <Ionicons name="locate" size={20} color={color.PRIMARY_COLOR} />
+          <Text style={{ fontSize: 16, fontWeight: "400" }}>{pickupLocation}</Text>
         </TouchableOpacity>
         <SeperatorLine />
         <View style={{ marginTop: -6, marginBottom: -12, }}>
@@ -100,12 +99,7 @@ export default function HomeScreen() {
       <StatusBar style="auto" />
       <VehicleList onVehicleSelect={handleVehicleSelect} />
       <Button title="Tạo đơn hàng" buttonStyle={styles.button} onPress={showAlert} />
-
-      <Overlay
-        isVisible={confirmationOverlayVisible}
-        onBackdropPress={closeOverlay}
-        overlayStyle={styles.overlay}
-      >
+      <Overlay isVisible={confirmationOverlayVisible} onBackdropPress={closeOverlay} overlayStyle={styles.overlay}>
         <Text style={styles.overlayText}>Địa điểm lấy hàng: {pickupLocation}</Text>
         <Text style={styles.overlayText}>Địa điểm giao hàng: {deliveryLocation}</Text>
         <Text style={styles.overlayText}>Phương tiện: {vehicle}</Text>
@@ -158,7 +152,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginTop: 16,
   },
-  
+
   availableVehicle: {
     justifyContent: "center",
     paddingBottom: 6,
