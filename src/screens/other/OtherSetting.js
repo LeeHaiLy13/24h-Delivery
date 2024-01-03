@@ -7,10 +7,10 @@ export default function EditProfile() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.member}>
+        {/* <View style={styles.member}>
           <Text>Thay đổi mật khẩu</Text>
           <MaterialIcons name="navigate-next" size={24} color="black" />
-        </View>
+        </View> */}
         <View style={styles.line}></View>
         <View style={styles.member}>
           <Text>Kiểm chứng đơn hàng</Text>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
@@ -74,10 +74,10 @@ export default function SearchLocate({ route }) {
         <ActivityIndicator style={styles.loadingIndicator} />
       ) : (
         <>
-          
+
           <MapView style={styles.map} region={region}>
             {location && (
-              <>
+              <View style={{ marginHorizontal: marginSmall, }}>
                 <Marker
                   coordinate={{
                     latitude: location.coords.latitude,
@@ -86,24 +86,30 @@ export default function SearchLocate({ route }) {
                   title={placeName || 'Vị trí hiện tại:'}
                   description='Vị trí của bạn'
                 />
-                <Text style={styles.locationText}>
-                  Your Current Location: {placeName || 'Loading...'}
-                </Text>
-              </>
+                <View >
+                  <Text style={styles.locationText}>
+                    Vị trí hiện tại: {placeName || 'Loading...'}
+                  </Text>
+                </View>
+              </View>
             )}
           </MapView>
+
           <TouchableOpacity onPress={handleConfirmLocation} style={styles.confirmButton}>
-            <Text style={styles.confirmButtonText}>Confirm Location</Text>
+            <Text style={styles.confirmButtonText}>Xác nhận vị trí</Text>
           </TouchableOpacity>
         </>
       )}
     </View>
   );
 }
+const deviceWidth = Math.round(Dimensions.get('window').width);
+const marginSmall = Math.round((deviceWidth * 0.05) / 2);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
   },
   map: {
     width: '100%',
@@ -120,6 +126,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     marginTop: 10,
+
   },
   autocompleteContainer: {
     top: 10,
@@ -132,7 +139,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     position: 'absolute',
     bottom: 20,
-    width: '100%',
+    width: deviceWidth * 0.9,
     alignItems: 'center',
     backgroundColor: 'blue',
     padding: 10,

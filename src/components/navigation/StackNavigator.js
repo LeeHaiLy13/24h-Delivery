@@ -20,7 +20,16 @@ export default function StackNavigator() {
         <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ headerShown: false, }}/>
         <Stack.Screen name='RegisterScreen' component={RegisterScreen} options={{ headerShown: false, }}/>
         <Stack.Screen name="MainTabNavigator" component={MainTabNavigator} options={{ headerShown: false, }}/>
-        <Stack.Screen name="SearchLocate" component={SearchLocate}/>
+        <Stack.Screen name="SearchLocate" component={SearchLocate} options={
+        {
+          headerTitle: "Địa điểm lấy hàng",
+          headerTitleStyle: {
+            color: color.PRIMARY_COLOR,
+            textTransform: 'uppercase',
+            fontWeight: '600',
+          },
+        }
+      }/>
         <Stack.Screen name="AddressPicker" component={AddressPicker}/>
         <Stack.Screen name="OrderDetails" component={OrderDetails}/>
         <Stack.Screen name='EditProfile' component={EditProfile} options={

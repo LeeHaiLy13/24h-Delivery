@@ -5,6 +5,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { doc, collection, onSnapshot, query, where, updateDoc } from 'firebase/firestore';
 import { Button, Input, Overlay } from 'react-native-elements';
+import color from '../../constants/color';
 
 export default function PendingScreen() {
   const [pendingOrders, setPendingOrders] = useState([]);
@@ -12,20 +13,25 @@ export default function PendingScreen() {
   const docRef = doc(FIREBASE_DB, 'users', currentUser);
   const colRef = collection(docRef, 'orderList');
 
+  const [reason, setReason] = useState("");
+  const [overlayVisible, setOverlayVisible] = useState(false);
+
   // Hàm chuyển đổi thời gian
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
+
 
   const getPendingList = () => {
     // Create a query to get orders with status "Pending"
     const q = query(colRef, where('status', '==', 'Pending'));
-
     // Subscribe to the query snapshot
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let pendingOrders = [];
@@ -40,63 +46,100 @@ export default function PendingScreen() {
       });
       setPendingOrders(pendingOrders);
     });
-
     return unsubscribe;
   };
-
   useEffect(() => {
     // Fetch pending orders when the component mounts
     const unsubscribe = getPendingList();
-
     // Unsubscribe when the component unmounts
     return () => {
       unsubscribe();
     };
   }, []);
 
-  const cancelOrder = async (orderId) => {
+  const showOverlay = () => {
+    setOverlayVisible(true);
+  };
+
+  const cancelOrder = (orderId) => {
+    showOverlay();
+    // Các xử lý khác nếu cần
+  };
+
+  const handleCancelOrder = async (orderId) => {
     try {
       // Update the order status to "Canceled"
       const orderDocRef = doc(colRef, orderId);
-      await updateDoc(orderDocRef, { status: 'Canceled' });
-
+      await updateDoc(orderDocRef, { status: 'Canceled', cancelReason: reason });
       // Optional: Fetch the updated pending list again
       getPendingList();
     } catch (error) {
       console.error('Error canceling order:', error);
+    } finally {
+      // Ẩn overlay sau khi xử lý xong
+      setOverlayVisible(false);
     }
   };
+
 
   return (
     <View style={styles.container}>
       {pendingOrders.length > 0 ? (
         <FlatList
-        data={pendingOrders}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigateToOrderDetail(item)}>
-            <View style={styles.orderItem}>
-              <View style={{ paddingBottom: 12, }}>
-                <Text>ID: {item.id}</Text>
-                <Text>Ngày tạo: {item.formattedDate}</Text>
-                <Text>Phương tiện: {item.vehicle}</Text>
-                <Text>Địa điểm lấy hàng: {item.pickupAddress}</Text>
-                <Text>Địa điểm lấy hàng: {item.deliveryAddress}</Text>
-                <Text style={{ color: "#B0B0B0" }}>Trạng thái: Đang chờ</Text>
-                {/* Hiển thị các trường dữ liệu khác nếu cần */}
+          data={pendingOrders}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View>
+              <View style={styles.orderItem}>
+                <View style={{ paddingBottom: 12, }}>
+                  <Text>ID: {item.id}</Text>
+                  <Text>Ngày tạo: {item.formattedDate}</Text>
+                  <Text>Phương tiện: {item.vehicle}</Text>
+                  <Text>Địa điểm lấy hàng: {item.pickupAddress}</Text>
+                  <Text>Địa điểm lấy hàng: {item.deliveryAddress}</Text>
+                  <Text style={{ color: "#B0B0B0", fontWeight: "500" }}>Trạng thái: Đang chờ</Text>
+                  {/* Hiển thị các trường dữ liệu khác nếu cần */}
 
+                </View>
+                <View style={{ alignItems: 'center', }}>
+                  <Button title='Hủy đơn hàng' buttonStyle={styles.button} onPress={() => cancelOrder(item.id)} />
+                </View>
               </View>
-              <View style={{ alignItems: 'center', }}>
-                <Button title='Hủy đơn hàng' buttonStyle={styles.button} onPress={() => cancelOrder(item.id)} />
-              </View>
+              <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={styles.overlay}>
+                <View>
+                  <Text>Nhập lý do hủy đơn</Text>
+                  <Input
+                    multiline
+                    numberOfLines={4}
+                    placeholder="Nhập lý do..."
+                    value={reason}
+                    onChangeText={(text) => setReason(text)}
+                  />
+                  <View style={styles.overlayButtons}>
+                    <Button title="Hủy" onPress={() => setOverlayVisible(false)} buttonStyle={{
+                      marginBottom: 12,
+                      backgroundColor: color.PRIMARY_COLOR,
+                      borderRadius: 8,
+                      padding: 12,
+                    }} />
+                    <Button title="Xác nhận" onPress={() => handleCancelOrder(item.id)} buttonStyle={{
+                      marginBottom: 12,
+                      backgroundColor: color.PRIMARY_COLOR,
+                      borderRadius: 8,
+                      padding: 12,
+                    }} />
+                  </View>
+                </View>
+              </Overlay>
             </View>
-          </TouchableOpacity>
-        )}
-      />
-      
+
+          )}
+        />
+
       ) : (
         <Text>Không có đơn hàng nào.</Text>
       )}
+
       <StatusBar style="auto" />
     </View>
   );
@@ -126,12 +169,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     width: deviceWidth * 0.9,
     backgroundColor: "#fff",
-    color: "#ddd",
   },
   button: {
     backgroundColor: '#FF3131',
     borderRadius: 8,
-    padding: 12,
-    width: 200,
+    padding: 8,
+    width: 160,
+  },
+  overlay: {
+    width: deviceWidth * 0.8,
+    padding: 20,
+    borderRadius: 8,
+  },
+  overlayText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  overlayButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
 });

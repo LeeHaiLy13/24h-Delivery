@@ -1,57 +1,99 @@
 import React, { useState, useEffect } from "react";
-import { Alert, Dimensions, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Alert, Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
-import { updateProfile } from 'firebase/auth';
-import { Button, Input, Overlay } from 'react-native-elements';
+import { updateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { Button, Input } from 'react-native-elements';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import SeperatorLine from '../../components/SeperatorLine';
 
 export default function EditProfile() {
-  const [isEditing, setEditing] = useState(false);
   const [newUsername, setNewUsername] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+
   const [newPwd, setNewPwd] = useState("");
-  const [currentUsername, setCurrentUsername] = useState(
-    FIREBASE_AUTH.currentUser?.displayName || "Tên người dùng"
-  );
-  console.log(FIREBASE_AUTH.currentUser)
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [isEditingPwd, setIsEditingPwd] = useState(false);
 
-  useEffect(() => {
-    setCurrentUsername(FIREBASE_AUTH.currentUser?.displayName || "Tên người dùng");
-  }, [isEditing]);
+  const [userDetails, setUserDetails] = useState({});
 
-  const handleSave = async () => {
+  const handleSaveName = async () => {
     try {
       if (newUsername.trim() === "") {
         Alert.alert("Lỗi", "Vui lòng nhập tên mới.");
         return;
       }
+      await updateProfile(FIREBASE_AUTH.currentUser, { displayName: newUsername });
+      const userID = FIREBASE_AUTH.currentUser.uid;
+      const docRef = doc(FIREBASE_DB, 'users', userID);
+      await updateDoc(docRef, { username: newUsername });
+      setUserDetails({ ...userDetails, username: newUsername });
+      Alert.alert("Thông báo", "Tên đã được cập nhật thành công.");
+    } catch (error) {
+      Alert.alert("Lỗi", "Đã có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.");
+    } finally {
+      setIsEditingName(false);
+    }
+  };
+  // console.log(EmailAuthProvider.credential(FIREBASE_AUTH.currentUser.email, currentPassword))
+  const handleSavePwd = async () => {
+    try {
       if (newPwd.trim() === "") {
         Alert.alert("Lỗi", "Vui lòng nhập mật khẩu mới.");
         return;
       }
-
-      await updateProfile(FIREBASE_AUTH.currentUser, { displayName: newUsername });
-      await updateProfile(FIREBASE_AUTH.currentUser, { displayName: newPwd });
-      setEditing(false);
-      setCurrentUsername(newUsername);
-      setNewUsername("");
-      Alert.alert("Thông báo", "Tên đã được cập nhật thành công.");
+  
+      await updatePassword(FIREBASE_AUTH.currentUser, newPwd);
+  
+      Alert.alert("Thông báo", "Mật khẩu đã được cập nhật thành công.");
     } catch (error) {
-      console.error("Lỗi cập nhật tên:", error.message);
-      Alert.alert("Lỗi", "Đã có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.");
+      console.error('Error updating password:', error);
+      Alert.alert("Lỗi", "Đã có lỗi xảy ra khi cập nhật mật khẩu. Vui lòng thử lại.");
+    } finally {
+      setIsEditingPwd(false);
     }
   };
+  
+  
 
-  const handleCancel = () => {
-    setEditing(false);
-    setNewUsername("");
+  const handleCancelEditingName = () => {
+    setIsEditingName(false);
+    setNewUsername(userDetails.username);
   };
+
+  const handleCancelEditingPwd = () => {
+    setIsEditingPwd(false);
+    setNewPwd("");
+  };
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const userUID = FIREBASE_AUTH.currentUser.uid;
+        const docRef = doc(FIREBASE_DB, 'users', userUID);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setUserDetails(docSnap.data());
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error.message);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   return (
     <View style={styles.editProfileContainer}>
-      <TouchableOpacity style={styles.editProfileItem} onPress={() => setEditing(true)} disabled={isEditing}>
+      <TouchableOpacity
+        style={styles.editProfileItem}
+        onPress={() => setIsEditingName(true)}
+        disabled={isEditingName}
+      >
         <Text>Tên</Text>
-        {isEditing ? (
+        {isEditingName ? (
           <Input
             placeholder="Nhập tên mới"
             leftIcon={{ name: "edit", type: "font-awesome" }}
@@ -62,38 +104,51 @@ export default function EditProfile() {
           />
         ) : (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text>{currentUsername}</Text>
+            <Text>{userDetails.username}</Text>
           </View>
         )}
       </TouchableOpacity>
-      <TouchableOpacity style={styles.editProfileItem} onPress={() => setEditing(true)} disabled={isEditing}>
-        <Text>Tên</Text>
-        {isEditing ? (
-          <Input
-            placeholder="Nhập mật khẩu mới"
-            leftIcon={{ name: "edit", type: "font-awesome" }}
-            value={newUsername}
-            autoCapitalize="none"
-            onChangeText={(text) => setNewUsername(text)}
-            inputContainerStyle={styles.inputField}
-          />
-        ) : (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text>{currentUsername}</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-      {isEditing && (
+      {isEditingName && (
         <View style={styles.editButtons}>
-          <TouchableOpacity onPress={handleSave}>
+          <TouchableOpacity onPress={handleSaveName}>
             <Text style={styles.saveText}>Lưu</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleCancel}>
+          <TouchableOpacity onPress={handleCancelEditingName}>
             <Text style={styles.cancelText}>Hủy</Text>
           </TouchableOpacity>
         </View>
       )}
-      <SeperatorLine />
+      {/* <TouchableOpacity
+        style={styles.editProfileItem}
+        onPress={() => setIsEditingPwd(true)}
+        disabled={isEditingPwd}
+      >
+        <Text>Mật khẩu</Text>
+        {isEditingPwd ? (
+          <Input
+            placeholder="Nhập mật khẩu mới"
+            leftIcon={{ name: "edit", type: "font-awesome" }}
+            value={newPwd}
+            autoCapitalize="none"
+            onChangeText={(text) => setNewPwd(text)}
+            inputContainerStyle={styles.inputField}
+            secureTextEntry
+          />
+        ) : (
+          <></>
+        )}
+      </TouchableOpacity>
+      {isEditingPwd && (
+        <View style={styles.editButtons}>
+          <TouchableOpacity onPress={handleSavePwd}>
+            <Text style={styles.saveText}>Lưu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleCancelEditingPwd}>
+            <Text style={styles.cancelText}>Hủy</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      <SeperatorLine /> */}
     </View>
   );
 }
@@ -126,7 +181,6 @@ const styles = StyleSheet.create({
   editButtons: {
     flexDirection: "row",
     justifyContent: "space-around",
-    // marginHorizontal: marginSmall * 2,
     marginVertical: marginSmall,
   },
   saveText: {

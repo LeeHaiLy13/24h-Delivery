@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, } from '@react-navigation/native';
 import SeperatorLine from '../../components/SeperatorLine';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { Button } from "react-native-elements";
 import color from '../../constants/color';
+import { FIREBASE_APP, FIREBASE_AUTH } from '../../../FirebaseConfig';
+
 
 const accountSettingOptions = [
   {
@@ -68,6 +70,18 @@ function RenderOptionList() {
 export default function AccountScreen() {
   const navigation = useNavigation();
 
+  const [displayName, setDisplayName] = useState('');
+  
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setDisplayName(user.displayName || '');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   const logout = () => {
     const auth = getAuth();
     signOut(auth).then(() => {
@@ -80,9 +94,11 @@ export default function AccountScreen() {
     <View style={styles.container}>
       <LinearGradient
         colors={['#45cfdd85', '#75f0b980', '#a0fb687a']}
-        style={{ width: deviceWidth, height: deviceHeight * 1 / 4, }}>
+        style={{ width: deviceWidth, height: deviceHeight * 1 / 4, alignItems: 'center', justifyContent: 'center', }}>
         <View style={{ alignItems: 'center', justifyContent: 'center', }}>
-          {/* code here */}
+          <Image source={{ uri: 'https://thumbs.dreamstime.com/b/businessman-avatar-line-icon-vector-illustration-design-79327237.jpg' }} style={{width: 100, aspectRatio: 1, borderRadius: 90,}} />
+          {/* show here */}
+          <Text style={{ fontSize: 20, color: '#000' }}>{displayName}</Text>
         </View>
       </LinearGradient>
       <RenderOptionList />
